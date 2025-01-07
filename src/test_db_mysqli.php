@@ -1,17 +1,17 @@
 <?php
 
-//ppresi dal docker-compose.yml
-$host = 'db';
-$dbname = 'root_db';
-$user = 'user';
-$password = 'user';
-$port = 3306;
+    //ppresi dal docker-compose.yml
+    $host = 'db';
+    $dbname = 'root_db';
+    $user = 'user';
+    $password = 'user';
+    $port = 3306;
 
-$connection = new mysqli($host, $user, $password, $dbname, $port);
+    $connection = new mysqli($host, $user, $password, $dbname, $port);
 
-if($connection->connect_error){
-    die("Errore di connessione: ".$connection->connect_error); //ok
-}
+    if($connection->connect_error){
+        die("Errore di connessione: ".$connection->connect_error); //ok
+    }
 
-echo "Connessione al database riuscita con mysqli!";
-$connection->close();
+    echo "Connessione al database riuscita con mysqli!";
+    $connection->close();
