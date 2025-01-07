@@ -4,7 +4,7 @@
 $host = 'db';
 $dbname = 'root_db';
 $user = 'user';
-$password = 'password';
+$password = 'user';
 $port = 3306;
 
 $connection = new mysqli($host, $user, $password, $dbname, $port);
