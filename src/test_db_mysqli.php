@@ -15,5 +15,3 @@ if($connection->connect_error){
 
 echo "Connessione al database riuscita con mysqli!";
 $connection->close();
-
-?>
