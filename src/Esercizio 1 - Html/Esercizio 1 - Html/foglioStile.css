@@ -1,0 +1,46 @@
+/*margin di default 8px da strumenti per sviluppatori*/
+body{
+    margin:auto;
+}
+/*Problema di visualizzazione*/
+header h1
+{
+    margin:auto;
+}
+header {
+    background-color:blue;
+    color: white;
+    text-align: center;
+}
+
+nav{
+    background-color: aqua;
+    color: black;
+}
+
+nav ul{
+    display: inline-flex;
+    list-style-type: none;
+}
+/*distanziazione elementi della lista*/
+nav li{
+    padding: 5px;
+}
+nav a{
+    padding: 5px;
+    text-decoration: none;
+}
+
+nav a:hover{
+    /*background-color: rgb(250,250,250);*/
+    text-decoration: red underline !important;
+}
+
+ul{
+    list-style-type: none;
+}
+
+footer{
+    background-color:blue;
+    color: white;
+}
