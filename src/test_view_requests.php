@@ -35,11 +35,11 @@
     elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
         echo "POST:<br>";
-        print_r($POST);
+        print_r($_POST);
 
         //visualizza i dati ricevuti dalla post/get
         //iterando gli elementi dell'array associativo
-        foreach($POST as $key=>$value)
+        foreach($_POST as $key=>$value)
         {
             echo "$key=$value";
             echo"<br>";
