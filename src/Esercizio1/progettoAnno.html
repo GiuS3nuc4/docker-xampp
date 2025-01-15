@@ -107,7 +107,7 @@
     <h1 id="titolo">Registrazione Scout</h1>
 
      <section>
-        <form name="registrazione">
+        <form name="registrazione" action="stampa.php" method="post">
             <label for="fname">Nome</label><br>
             <input type="text" id="fname" name="fname" value=""><br>
 
@@ -135,8 +135,8 @@
             <input type="radio" id="femminile" name="genere" value="femminile">
             <label for="femminile">Femminile</label><br><br>
 
-            <label for="data-nascita">Data nascita</label><br>
-            <input type="date" id="data-nascita" name="data-nascita"><br><br>
+            <label for="dataNascita">Data nascita</label><br>
+            <input type="date" id="dataNascita" name="dataNascita"><br><br>
 
             <input type="button" value="Invio" onclick="stampadati()"><br>
         </form>
