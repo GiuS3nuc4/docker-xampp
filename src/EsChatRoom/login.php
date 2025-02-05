@@ -1,18 +1,34 @@
 <?php
+    //include la connessione al db
+    require_once "db.php";
 
-    //if($_GET == null)
-        //echo "Richiesta non tramite GET";
-    //else if ($_POST == null)
-        //echo "Richiesta non tramite POST";
+    //verifica se la richiesta è POST
+    if ($SERVER["REQUEST_METHOD"] == "POST") {
+        if (!empty($_POST['username']) && !empty($_POST['password'])) {
+            $username = $_POST['username'];
+            $pw = $_POST['password'];
 
-    if($_GET != null){
-        $username = $_GET['username'];
-        $pw = $_GET['pw'];
+            //query sicura con prepared stataments(metodo per eseguire query SQL in modo sicuro)
+            $query = "SELECT * FROM utenti WHERE username = ? AND pw = ?";
+            $stmt = $connection->prepare($query);
+            $stmt->bind_param("ss", $username, $pw);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        //connessione al db
-        //...
+            if($result->num_rows > 0){
+                echo "Login riuscito!";
+                //avvio sessione
+                session_start();
+                $SESSION['username'] = $username;
+                header("Location: home.php")
+            } else{
+                echo "Credenziali errate!"
+            }
 
-        $query = SELECT * FROM utenti WHERE username='$username' AND pw='$pw';
+            $stmt->close();
+        } else {
+            echo "Inserisci username e password!";
+        }
+    } else{
+        scho "Richiesta non valida!";
     }
-    else if ($_POST == null)
-        echo "Richiesta non tramite POST";
