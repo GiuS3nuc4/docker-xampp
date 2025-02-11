@@ -50,3 +50,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Se la richiesta non è di tipo POST
     echo "Richiesta non valida!";
 }
+?>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #e8f5e9;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <form action="login.php" method="POST">
+        <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="password" name="password" placeholder="Password" required><br><br>
+        <button type="submit">Accedi</button>
+    </form>
+    <p>Non hai un account? <a href="register.php">Registrati</a></p>
+</body>
+</html>

@@ -7,9 +7,59 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+// Connessione al database
+require_once "db.php";
+
 // Recupera il nome della chat dalla richiesta GET
 $chat_name = isset($_GET['chat']) ? $_GET['chat'] : 'Generale';
 
+// ID della stanza (per esempio, in base al nome della chat)
+$stanza_id = null;
+switch ($chat_name) {
+    case 'tecnologia':
+        $stanza_id = 1;
+        break;
+    case 'sport':
+        $stanza_id = 2;
+        break;
+    case 'musica':
+        $stanza_id = 3;
+        break;
+    default:
+        $stanza_id = 1; // Valore di default
+        break;
+}
+
+// Recupera i messaggi dalla tabella Messaggi
+$query = "SELECT m.testo, u.username FROM Messaggi m
+          JOIN Utenti u ON m.utente_id = u.id
+          WHERE m.stanza_id = ? ORDER BY m.id ASC";
+$stmt = $connection->prepare($query);
+$stmt->bind_param("i", $stanza_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$messages = [];
+while ($row = $result->fetch_assoc()) {
+    $messages[] = $row;
+}
+
+// Se l'utente invia un nuovo messaggio
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['message'])) {
+    $message = $_POST['message'];
+    
+    // Inserisce il nuovo messaggio nella tabella
+    $query = "INSERT INTO Messaggi (utente_id, stanza_id, testo) VALUES (?, ?, ?)";
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param("iis", $_SESSION['id'], $stanza_id, $message);
+    $stmt->execute();
+    
+    // Ricarica la pagina per visualizzare il nuovo messaggio
+    header("Location: chat.php?chat=" . $chat_name);
+    exit();
+}
+
+$connection->close();
 ?>
 
 <!DOCTYPE html>
@@ -52,28 +102,20 @@ $chat_name = isset($_GET['chat']) ? $_GET['chat'] : 'Generale';
     <h1>Chat <?php echo ucfirst(htmlspecialchars($chat_name)); ?></h1>
     <div class="chat-container">
         <div class="message-box" id="messages">
-            <p>Benvenuto nella chat di <?php echo ucfirst(htmlspecialchars($chat_name)); ?>!</p>
+            <?php
+            // Visualizza i messaggi della chat
+            foreach ($messages as $msg) {
+                echo "<p><strong>" . htmlspecialchars($msg['username']) . ":</strong> " . htmlspecialchars($msg['testo']) . "</p>";
+            }
+            ?>
         </div>
-        <input type="text" id="message" placeholder="Scrivi un messaggio...">
-        <button onclick="sendMessage()">Invia</button>
+        <form action="chat.php?chat=<?php echo htmlspecialchars($chat_name); ?>" method="POST">
+            <input type="text" name="message" id="message" placeholder="Scrivi un messaggio..." required>
+            <button type="submit">Invia</button>
+        </form>
     </div>
     <br>
     <a href="chat_selection.php">Torna alla selezione chat</a> |
     <a href="logout.php">Logout</a>
-
-    <script>
-        function sendMessage() {
-            let messageBox = document.getElementById("messages");
-            let messageInput = document.getElementById("message");
-            let message = messageInput.value.trim();
-
-            if (message !== "") {
-                let newMessage = document.createElement("p");
-                newMessage.textContent = "<?php echo htmlspecialchars($_SESSION['username']); ?>: " + message;
-                messageBox.appendChild(newMessage);
-                messageInput.value = "";
-            }
-        }
-    </script>
 </body>
 </html>
