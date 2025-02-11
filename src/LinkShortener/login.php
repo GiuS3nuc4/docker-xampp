@@ -26,11 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $user['password'])) {
                 // Se la password è corretta, avvia la sessione
                 $_SESSION['username'] = $username;
-                $_SESSION['id'] = $user['id']; 
+                $_SESSION['id'] = $user['id'];
 
-
-                // Redirect alla selezione della chat
-                header("Location: chat_selection.php");
+                // Redirect alla dashboard.php
+                header("Location: dashboard.php");
                 exit();
             } else {
                 // Se la password non corrisponde
@@ -47,8 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Inserisci username e password!";
     }
 } else {
-    // Se la richiesta non è di tipo POST
-    echo "Richiesta non valida!";
+    //echo "Richiesta non valida!";
 }
 ?>
 

@@ -37,3 +37,17 @@
 
 </body>
 </html>
+
+<?php
+session_start();
+
+if (isset($_SESSION['user'])) {
+    echo "<h2>Benvenuto, " . $_SESSION['user'] . "!</h2>";
+    echo "<p><a href='logout.php' class='btn'>Esci</a></p>";
+} else {
+    echo "<h1>Benvenuto nel sistema di link shortener!</h1>";
+    echo "<p>Scegli una delle opzioni per continuare:</p>";
+    echo "<a href='login.php' class='btn'>Login</a>";
+    echo "<a href='register.php' class='btn'>Registrati</a>";
+}
+?>
