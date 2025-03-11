@@ -33,11 +33,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $error = "Inserisci username e password!";
     }
+    /*$user = $result->fetch_assoc();
 
+    if ($user && password_verify($password, $user['password'])) {  // Controlla se $user è valido
+        $_SESSION['username'] = $username;
+        $_SESSION['id'] = $user['id'];
+
+        // Redirect alla dashboard
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        echo "Credenziali errate!";
+    }
     $update_query = "UPDATE Link SET login_count = login_count + 1 WHERE utente_id = ?";
     $stmt = $connection->prepare($update_query);
     $stmt->bind_param("i", $user['id']);
-    $stmt->execute();
+    $stmt->execute();*/
 }
 ?>
 
