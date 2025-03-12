@@ -6,25 +6,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['username']) && !empty($_POST['email']) && !empty($_POST['password'])) {
         $username = trim($_POST['username']);
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'];
-        
+        $password = $_POST['password']; // Password salvata in chiaro (insicuro!)
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Formato email non valido!";
         } else {
+            // Controllo se username o email esistono già
             $query = "SELECT id FROM Utenti WHERE username = ? OR email = ?";
             if ($stmt = $connection->prepare($query)) {
                 $stmt->bind_param("ss", $username, $email);
                 $stmt->execute();
                 $stmt->store_result();
-                
+
                 if ($stmt->num_rows > 0) {
                     $error = "Username o email già esistente!";
                 } else {
-                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    // Query per inserire la password in chiaro (NON SICURO!)
                     $insert_query = "INSERT INTO Utenti (username, email, password) VALUES (?, ?, ?)";
                     
                     if ($stmt = $connection->prepare($insert_query)) {
-                        $stmt->bind_param("sss", $username, $email, $hashed_password);
+                        $stmt->bind_param("sss", $username, $email, $password);
                         if ($stmt->execute()) {
                             echo "Registrazione avvenuta con successo! <a href='login.php'>Login</a>";
                             exit();

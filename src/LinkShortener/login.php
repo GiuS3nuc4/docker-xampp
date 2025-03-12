@@ -7,6 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = trim($_POST['username']);
         $password = $_POST['password'];
 
+        // Query senza password_hash
         $query = "SELECT id, password FROM Utenti WHERE username = ?";
         if ($stmt = $connection->prepare($query)) {
             $stmt->bind_param("s", $username);
@@ -14,10 +15,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->store_result();
 
             if ($stmt->num_rows > 0) {
-                $stmt->bind_result($user_id, $hashed_password);
+                $stmt->bind_result($user_id, $db_password);
                 $stmt->fetch();
                 
-                if (password_verify($password, $hashed_password)) {
+                // Controllo diretto della password (senza hashing)
+                if ($password === $db_password) {
                     $_SESSION['username'] = $username;
                     $_SESSION['id'] = $user_id;
                     header("Location: dashboard.php");
@@ -33,22 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $error = "Inserisci username e password!";
     }
-    /*$user = $result->fetch_assoc();
-
-    if ($user && password_verify($password, $user['password'])) {  // Controlla se $user è valido
-        $_SESSION['username'] = $username;
-        $_SESSION['id'] = $user['id'];
-
-        // Redirect alla dashboard
-        header("Location: dashboard.php");
-        exit();
-    } else {
-        echo "Credenziali errate!";
-    }
-    $update_query = "UPDATE Link SET login_count = login_count + 1 WHERE utente_id = ?";
-    $stmt = $connection->prepare($update_query);
-    $stmt->bind_param("i", $user['id']);
-    $stmt->execute();*/
 }
 ?>
 
