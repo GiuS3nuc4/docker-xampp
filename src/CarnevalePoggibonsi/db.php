@@ -1,5 +1,4 @@
 <?php
-
     //parametri connessione db
     $host = 'db';
     $dbname = 'carnevalePoggibonsi';
@@ -12,3 +11,6 @@
     if($connection->connect_error){
         die("Errore di connessione: ".$connection->connect_error);
     }
+
+
+    

@@ -26,13 +26,13 @@ switch ($chat_name) {
         $stanza_id = 3;
         break;
     default:
-        $stanza_id = 1; // Valore di default
+        $stanza_id = -1; // Valore di default
         break;
 }
 
 // Recupera i messaggi dalla tabella Messaggi
-$query = "SELECT m.testo, u.username FROM Messaggi m
-          JOIN Utenti u ON m.utente_id = u.id
+$query = "SELECT m.testo, u.username 
+          FROM Messaggi m JOIN Utenti u ON m.utente_id = u.id
           WHERE m.stanza_id = ? ORDER BY m.id ASC";
 $stmt = $connection->prepare($query);
 $stmt->bind_param("i", $stanza_id);
