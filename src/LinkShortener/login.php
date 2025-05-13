@@ -1,12 +1,6 @@
 <?php
 // Avvio sessione
 session_start();
-//password hashate: nel database:
-//password123
-//ciao1234
-//passw0rd
-//qwerty2025
-//securepass!
 
 // Include la connessione al DB
 require_once "db.php";
