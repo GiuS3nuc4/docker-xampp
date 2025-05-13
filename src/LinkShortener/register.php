@@ -21,11 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($stmt->num_rows > 0) {
                     $error = "Username o email già esistente!";
                 } else {
-                    // Query per inserire la password in chiaro (NON SICURO!)
-                    $insert_query = "INSERT INTO Utenti (username, email, password) VALUES (?, ?, ?)";
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                     
-                    if ($stmt = $connection->prepare($insert_query)) {
-                        $stmt->bind_param("sss", $username, $email, $password);
+                    $insert_query = "INSERT INTO Utenti (username, email, password) VALUES (?, ?, ?)";
+                    $insert_stmt = $connection->prepare($insert_query);
+                    $insert_stmt->bind_param("sss", $username, $email, $hashed_password);
+                    
                         if ($stmt->execute()) {
                             echo "Registrazione avvenuta con successo! <a href='login.php'>Login</a>";
                             exit();

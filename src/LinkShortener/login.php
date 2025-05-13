@@ -7,19 +7,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = trim($_POST['username']);
         $password = $_POST['password'];
 
-        // Query senza password_hash
+        // Query per la password criptata dal database
         $query = "SELECT id, password FROM Utenti WHERE username = ?";
-        if ($stmt = $connection->prepare($query)) {
-            $stmt->bind_param("s", $username);
-            $stmt->execute();
-            $stmt->store_result();
+        $stmt = $connection->prepare($query);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->store_result();
 
             if ($stmt->num_rows > 0) {
                 $stmt->bind_result($user_id, $db_password);
                 $stmt->fetch();
                 
-                // Controllo diretto della password (senza hashing)
-                if ($password === $db_password) {
+                // Verifica della password con password_verify
+                if (password_verify($password, $db_password)) {
+                    // Password corretta, avvia la sessione
                     $_SESSION['username'] = $username;
                     $_SESSION['id'] = $user_id;
                     header("Location: dashboard.php");
