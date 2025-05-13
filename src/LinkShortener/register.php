@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Se l'inserimento va a buon fine
             if ($stmt->affected_rows > 0) {
-                echo "Registrazione avvenuta con successo! <a href='login.html'>Login</a>";
+                echo "Registrazione avvenuta con successo! <a href='login.php'>Login</a>";
             } else {
                 echo "Errore durante la registrazione. Riprova.";
             }
