@@ -1,41 +1,60 @@
 <?php
+// Avvio sessione
 session_start();
+//password hashate: nel database:
+//password123
+//ciao1234
+//passw0rd
+//qwerty2025
+//securepass!
+
+// Include la connessione al DB
 require_once "db.php";
 
+// Verifica se la richiesta è POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['username']) && !empty($_POST['password'])) {
-        $username = trim($_POST['username']);
+        $username = $_POST['username'];
         $password = $_POST['password'];
 
-        // Query per la password criptata dal database
-        $query = "SELECT id, password FROM Utenti WHERE username = ?";
+        // Query per recuperare i dati dell'utente (username e password hashata)
+        $query = "SELECT * FROM Utenti WHERE username = ?";
         $stmt = $connection->prepare($query);
         $stmt->bind_param("s", $username);
         $stmt->execute();
-        $stmt->store_result();
+        $result = $stmt->get_result();
 
-            if ($stmt->num_rows > 0) {
-                $stmt->bind_result($user_id, $db_password);
-                $stmt->fetch();
-                
-                // Verifica della password con password_verify
-                if (password_verify($password, $db_password)) {
-                    // Password corretta, avvia la sessione
-                    $_SESSION['username'] = $username;
-                    $_SESSION['id'] = $user_id;
-                    header("Location: dashboard.php");
-                    exit();
-                } else {
-                    $error = "Credenziali errate!";
-                }
+        if ($result->num_rows > 0) {
+            // Se l'utente esiste, recupera i dati
+            $user = $result->fetch_assoc();
+
+            // Verifica se la password inserita corrisponde a quella salvata nel database
+            if (password_verify($password, $user['password'])) {
+                // Se la password è corretta, avvia la sessione
+                $_SESSION['username'] = $username;
+                $_SESSION['id'] = $user['id']; 
+
+
+                // Redirect alla selezione della chat
+                header("Location: dashboard.php");
+                exit();
             } else {
-                $error = "Credenziali errate!";
+                // Se la password non corrisponde
+                echo "Credenziali errate!";
             }
-            $stmt->close();
+        } else {
+            // Se l'utente non esiste
+            echo "Credenziali errate!";
         }
+
+        $stmt->close();
     } else {
-        $error = "Inserisci username e password!";
+        // Se manca username o password
+        echo "Inserisci username e password!";
     }
+} else {
+    // Se la richiesta non è di tipo POST
+    //echo "Richiesta non valida!";
 }
 ?>
 
@@ -46,10 +65,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #e8f5e9; }
-        input, button { padding: 10px; font-size: 16px; margin-top: 10px; }
-        button { background-color: #4caf50; color: white; border: none; border-radius: 5px; }
-        button:hover { background-color: #388e3c; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #e8f5e9;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #388e3c;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +94,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="password" name="password" placeholder="Password" required><br><br>
         <button type="submit">Accedi</button>
     </form>
-    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
     <p>Non hai un account? <a href="register.php">Registrati</a></p>
 </body>
 </html>

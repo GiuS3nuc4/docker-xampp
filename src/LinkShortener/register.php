@@ -1,48 +1,55 @@
 <?php
+// Avvio sessione
 session_start();
+
+// Include la connessione al DB
 require_once "db.php";
 
+// Verifica se la richiesta è POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Controlla se i campi sono stati riempiti
     if (!empty($_POST['username']) && !empty($_POST['email']) && !empty($_POST['password'])) {
-        $username = trim($_POST['username']);
-        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password']; // Password salvata in chiaro (insicuro!)
+        $username = $_POST['username'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = "Formato email non valido!";
+        // Controlla se l'username è già in uso
+        $query = "SELECT * FROM Utenti WHERE username = ?";
+        $stmt = $connection->prepare($query);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // Se l'username è già preso, mostra un messaggio di errore
+            echo "Username già esistente!";
         } else {
-            // Controllo se username o email esistono già
-            $query = "SELECT id FROM Utenti WHERE username = ? OR email = ?";
-            if ($stmt = $connection->prepare($query)) {
-                $stmt->bind_param("ss", $username, $email);
-                $stmt->execute();
-                $stmt->store_result();
+            // Hash della password prima di salvarla nel DB
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-                if ($stmt->num_rows > 0) {
-                    $error = "Username o email già esistente!";
-                } else {
-                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                    
-                    $insert_query = "INSERT INTO Utenti (username, email, password) VALUES (?, ?, ?)";
-                    $insert_stmt = $connection->prepare($insert_query);
-                    $insert_stmt->bind_param("sss", $username, $email, $hashed_password);
-                    
-                        if ($stmt->execute()) {
-                            echo "Registrazione avvenuta con successo! <a href='login.php'>Login</a>";
-                            exit();
-                        } else {
-                            $error = "Errore durante la registrazione.";
-                        }
-                        $stmt->close();
-                    }
-                }
-                $stmt->close();
+            // Query per inserire l'utente nel database
+            $insert_query = "INSERT INTO Utenti (username, email, password) VALUES (?, ?, ?)";
+            $stmt = $connection->prepare($insert_query);
+            $stmt->bind_param("sss", $username, $email, $hashed_password);
+            $stmt->execute();
+
+            // Se l'inserimento va a buon fine
+            if ($stmt->affected_rows > 0) {
+                echo "Registrazione avvenuta con successo! <a href='login.html'>Login</a>";
+            } else {
+                echo "Errore durante la registrazione. Riprova.";
             }
+
+            $stmt->close();
         }
     } else {
-        $error = "Tutti i campi sono obbligatori!";
+        echo "Tutti i campi sono obbligatori!";
     }
+} else {
+    //echo "Richiesta non valida!";
 }
+
+$connection->close();
 ?>
 
 <!DOCTYPE html>
@@ -52,10 +59,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrazione</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #e8f5e9; }
-        input, button { padding: 10px; font-size: 16px; margin-top: 10px; }
-        button { background-color: #4caf50; color: white; border: none; border-radius: 5px; }
-        button:hover { background-color: #388e3c; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #e8f5e9;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #388e3c;
+        }
     </style>
 </head>
 <body>
@@ -66,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="password" name="password" placeholder="Password" required><br><br>
         <button type="submit">Registrati</button>
     </form>
-    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
     <p>Hai già un account? <a href="login.php">Login</a></p>
 </body>
 </html>
