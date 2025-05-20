@@ -17,8 +17,10 @@ $user_id = $_SESSION['id']; // ID dell'utente loggato
 // Query per recuperare tutti i link originali, shortati, login_count e il nome dell'utente
 $query = "SELECT Link.link_org, Link.link_short, Link.login_count, Utenti.username 
           FROM Link 
-          JOIN Utenti ON Link.utente_id = Utenti.id";
+          JOIN Utenti ON Link.utente_id = Utenti.id
+          Where Utenti.id = ?";
 $stmt = $connection->prepare($query);
+$stmt->bind_param("s", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
